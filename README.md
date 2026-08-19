@@ -24,6 +24,22 @@ Set the host's `PORT` environment variable when required. The application serves
 
 For production, keep `data/submissions.jsonl` on persistent storage or replace the file-based handler with a hosted database. Do not commit real customer submissions to source control.
 
+## Deploy on Vercel
+
+This repository includes a Vercel serverless endpoint at `api/quote.js` and routing config in `vercel.json`, so the same frontend form (`/api/quote`) works after deployment.
+
+1. Import the GitHub repository in Vercel.
+2. Keep the project root as the repository root.
+3. Add environment variables in Vercel Project Settings:
+	- `RESEND_API_KEY`
+	- `NOTIFICATION_EMAIL`
+	- `FROM_EMAIL`
+4. Deploy.
+
+After deployment, submit one form entry and verify the email inbox configured in `NOTIFICATION_EMAIL`.
+
+Note: Vercel functions are stateless, so file writing to `data/submissions.jsonl` is not used in the Vercel path. Email is the primary lead delivery channel.
+
 ## Form submissions
 
 Submitted quote requests are posted to `POST /api/quote` and stored in `data/submissions.jsonl`. When the Resend environment variables are configured, the same inquiry is also emailed to `NOTIFICATION_EMAIL`.
