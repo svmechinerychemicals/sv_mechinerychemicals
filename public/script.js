@@ -46,7 +46,20 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(payload)
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      let result;
+
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const rawText = await response.text();
+        const looksLikeMissingApi = rawText.toLowerCase().includes('the page could not be found');
+        result = {
+          message: looksLikeMissingApi
+            ? 'Form API is not deployed yet. Please redeploy Vercel after uploading api/quote.js and vercel.json.'
+            : 'Server returned an unexpected response. Please try again.'
+        };
+      }
 
       if (!response.ok) {
         throw new Error(result.message || 'Something went wrong.');
